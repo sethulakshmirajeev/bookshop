@@ -1,0 +1,32 @@
+/* Target the specific DataTables styles within the datatable-wrapper */
+.datatable-wrapper .dataTables_wrapper {
+    /* Add your custom styles here */
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+.datatable-wrapper .dataTables_wrapper .dataTables_length,
+.datatable-wrapper .dataTables_wrapper .dataTables_filter,
+.datatable-wrapper .dataTables_wrapper .dataTables_info,
+.datatable-wrapper .dataTables_wrapper .dataTables_paginate {
+    color: #333;
+}
+
+/* Override any other table styling */
+.datatable-wrapper .dataTables_wrapper .dataTables_length select,
+.datatable-wrapper .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin: 5px;
+}
+
+/* Ensure table elements are not affected */
+.datatable-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Ensure DataTable pagination does not affect other elements */
+.datatable-wrapper .dataTables_paginate {
+    margin-top: 10px;
+}

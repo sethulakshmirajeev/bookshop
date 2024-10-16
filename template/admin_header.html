@@ -1,0 +1,36 @@
+<head>
+{% load static %}
+<!-- custom admin css file link -->
+<link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
+</head>
+
+<header class="header">
+    <div class="flex">
+        <a href="" class="logo">Admin<span>Panel</span></a>
+
+        <nav class="navbar">
+            <a href="../adminindex">Home</a>
+            <a href="../addproduct">Books</a>
+            <a href="../adminstock">Stock</a>
+            <a href="../adminorders">Orders</a>
+            <a href="../adminusers">Users</a>
+            <a href="../adminmessages">Messages</a>
+        </nav>
+
+        <div class="icons">
+            <div id="menu-btn" class="fas fa-bars"></div>
+            <div id="user-btn" class="fas fa-user"></div>
+        </div>
+
+        {% if request.user %}
+        <div class="account-box">
+            <p>username: {{ request.user.username }}<span></span></p>
+            <!-- <p>email: {{ request.user.email }}<span></span></p> -->
+            <button><a href="../logout" class="btn">logout</a></button>
+        </div>
+        {% endif %}
+    </div>
+</header>
+
+<!-- custom js file link-->
+<script src="{% static 'js/admin_script.js' %}"></script>

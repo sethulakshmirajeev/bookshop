@@ -1,0 +1,41 @@
+/* General DataTables styling - remains default */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    font-size: 1rem; /* Adjust font size for pagination buttons */
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    font-size: 1rem; /* Adjust font size for input elements */
+}
+
+/* Custom styling for users page */
+.users .container {
+    margin-top: 20px;
+}
+
+/* Title styling */
+.users .title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Button styling for delete actions */
+.users .btn-danger {
+    background-color: #dc3545; /* Bootstrap's default danger color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.users .btn-danger:hover {
+    background-color: #c82333; /* Darker shade of danger color on hover */
+}
+
+/* Table styling */
+.users .table {
+    margin-top: 20px;
+    font-size: 1rem; /* Ensure table font size matches other elements */
+}

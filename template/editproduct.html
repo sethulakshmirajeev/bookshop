@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+</head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
+<style>
+    body {
+        background-color: var(--light-bg), var(--purple);
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(30deg, #eee 60%, var(--light-bg) 10.1%);
+    }  
+</style>
+<body>
+    <!-- edit product -->
+    {% include 'admin_header.html' %}
+    <section class="add-products">
+        <h3 class="heading"><span>EDIT BOOKS</span></h3>
+        <form action="{% url 'editpro' products.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="text" name="name" value="{{ products.pnm }}" class="box" placeholder="Enter book name" required>
+            <input type="text" name="author" value="{{ products.athr }}" class="box" placeholder="Enter author name" required>
+            <select class="box" name="lang" required>
+                {% for id, obj in products.LANGUAGE_CHOICES %}
+                <option value="{{ id }}">{{ obj }}</option>
+               {% endfor %}
+            </select>
+            <select class="box" name="cat" required>
+                {% for id, obj in products.CATEGORY_CHOICES %}
+                <option value="{{ id }}">{{ obj }}</option>
+                {% endfor %}
+            </select>
+            
+            <input type="number" name="price" value="{{ products.pr }}" min="0" class="box" required placeholder="Enter product price">
+            <input type="number" name="quantity" value="{{ products.qty }}" min="0" class="box" required placeholder="Enter the quantity">
+            <input type="text" name="publisher" value="{{ products.publ }}" class="box" required placeholder="Enter the publisher name">
+            <input type="number" name="isbn" value="{{ products.isbn }}" class="box" required placeholder="Enter the ISBN">
+           
+            <p style="text-align: left;">Current Image: {{products.img}}</p>
+            <input type="file" name="image" value="{{img}}" class="form-control-file" accept="image/jpg, image/jpeg, image/png">
+            
+            <input type="submit" value="Update" name="update_product" class="btn">
+            
+            <a href="{% url 'prodisplay' %}" class="btn">Cancel</a>
+        </form>
+    </section>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Book Shop |</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom CSS file link -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> 
+    
+</head>
+<style>
+    .original-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-right: 10px;
+}
+
+    .discounted-price {
+    color: #E53935;
+    font-weight: bold;
+}
+
+    
+</style>
+<body data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">     
+<!-- header section starts   -->
+<!-- Header Section -->
+<header class="header">
+    <div class="header-1">
+        <a href="#" class="logo"><i class="fas fa-book"></i>BookVoyage</a>
+
+        <!-- Conditional Search Form -->
+        <form action="{% if request.user.is_authenticated %}  {% else %} {% url 'login' %} {% endif %}" class="search-form">
+            <input type="search" name="srch" placeholder="Search here..." id="search-box">
+            <label for="search-box" class="fas fa-search"></label>
+        </form>
+
+        <div class="icons">
+            <!-- Search Button -->
+            <div id="search-btn" class="fas fa-search"></div>
+            
+            {% if request.user.is_authenticated %}
+            <!-- Wishlist and Cart Icons -->
+            <a href="{% url 'view_wishlist' %}" class="fas fa-heart">
+                <span class="badge rounded-pill bg-dark">
+                    {% if wishitem > 0 %}
+                        {{ wishitem }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </span>
+            </a>
+            <a href="{% url 'cart' %}" class="fas fa-shopping-cart">
+                <span class="badge rounded-pill bg-dark">
+                    {% if totalitem > 0 %} 
+                        {{ totalitem }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </span>
+            </a>
+            
+            {% else %}
+            <!-- User Login Icon -->
+            <div id="login-btn" class="fas fa-user"></div>
+            {% endif %}
+        </div>
+    </div>
+
+    
+{% if request.user.is_authenticated %}
+<div class="dropdown-user">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      {{request.user}}
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{% url 'profile' %}">profile</a></li>
+      <li><a class="dropdown-item" href="../changepwd">Change password</a></li>
+      <li><a class="dropdown-item" href="{% url 'order' %}">orders</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="../logout">logout</a></li>
+    </ul>
+</div>
+{% endif %}
+
+ <!-- Display messages if any -->
+ {% if messages %}
+ <div style="width:400px; margin-left: 40%;">
+     {% for msg in messages %}
+         <div class="alert {% if 'success' in msg.tags %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" role="alert">
+             <strong>{% if 'success' in msg.tags %}!!SUCCESS!!{% else %}!!ERROR!!{% endif %}</strong>
+             <p>{{ msg }}</p>
+             <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+             </button>
+         </div>
+     {% endfor %}
+ </div>
+{% endif %}
+
+<!-- Login Form -->
+
+<div class="login-form-container">
+    <div id="close-login-btn" class="fas fa-times"></div>
+
+
+    <!-- Login Form -->
+    {% if not request.user.is_authenticated %}
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <h3>Login</h3>
+        <span>Username</span>
+        <input type="text" name="un" class="box" placeholder="Enter your username" value="{{ un|default:'' }}">
+        <span>Password</span>
+        <input type="password" name="pa" class="box" placeholder="Enter your password">
+        <div class="checkbox">
+            <input type="checkbox" name="remember_me" id="remember-me">
+            <label for="remember-me">Remember me</label>
+        </div>
+        <input type="submit" value="Login" class="btn">
+        <p>Forget password? <a href='../forgotpwd'>Click here</a></p>
+        <p>Don't have an account? <a href="../registerr">Create one</a></p>
+    </form>
+    {% endif %}
+</div>
+
+<div class="header-2">
+    <nav class="navbar">
+        <a href="{% if request.user.is_authenticated %} / {% else %} {% url 'login' %} {% endif %}">Home</a>
+        <div class="dropdown">
+            <a href="{% if request.user.is_authenticated %} # {% else %} {% url 'login' %} {% endif %}" class="nav-link dropdown-toggle" id="navbarDropdownArrivals" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Arrivals
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownArrivals">
+                <a class="dropdown-item" href="{% if request.user.is_authenticated %} {% url 'all_books' %} {% else %} {% url 'login' %} {% endif %}">All Categories</a>
+                {% for category, display in CATEGORY_CHOICES %}
+                    <a class="dropdown-item" href="{% if request.user.is_authenticated %} {% url 'category_books' category %} {% else %} {% url 'login' %} {% endif %}">{{ display }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <a href="{% if request.user.is_authenticated %} {% url 'about_us' %} {% else %} {% url 'login' %} {% endif %}">About Us</a>
+        <a href="{% if request.user.is_authenticated %} {% url 'contact_us' %} {% else %} {% url 'login' %} {% endif %}">Contact</a>
+    </nav>
+</div>
+</header>
+<!-- header section ends -->
+
+
+<!-- home section starts -->
+<section class="home" id="home">
+    <div class="row">
+        <div class="content">
+            <h3>upto 50% off</h3>
+            <p>Don't miss the chance to save big! With up to 50% off on a vast selection of books, there's never been a better time to expand your library. Shop now and dive into your next great read!</p>
+            <a href="{% if request.user.is_authenticated %} {% url 'all_books' %} {% else %} {% url 'login' %} {% endif %}" class="btn">shop now</a>
+        </div>
+
+        <div class="swiper books-slider">
+            <div class="swiper-wrapper">
+                <a href="#" class="swiper-slide"><img src="{% static 'images/5 am rd.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/400 cb.jpg' %}"  alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/priyapetta.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/3000stitches sm.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/ozhivu unni.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/ram anandhi.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/malgudi.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/maid nita.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/preeti.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/meera sadhu.jpg' %}" alt=""></a>
+                <a href="#" class="swiper-slide"><img src="{% static 'images/ruskin.jpg' %}" alt=""></a>
+            </div>
+        <img src="{% static 'images/standd.jpg' %}" class="stand" alt="">
+        </div>
+    </div>
+</section>
+<!-- home section ends -->
+
+
+<!-- icons section starts -->
+
+<section class="icons-container">
+    
+    <div class="icons">
+        <i class="fas fa-plane"></i>
+        <div class="content">
+            <h3>free shipping</h3>
+            <p>order over Rs 500</p>
+        </div>   
+    </div>
+
+    <div class="icons">
+        <i class="fas fa-lock"></i>
+        <div class="content">
+            <h3>secure payment</h3>
+            <p>100 secure payment</p>
+        </div>   
+    </div>
+
+    <div class="icons">
+        <i class="fas fa-redo-alt"></i>
+        <div class="content">
+            <h3>easy returns</h3>
+            <p>10 days return policy</p>
+        </div>   
+    </div>
+
+    <div class="icons">
+        <i class="fas fa-headset"></i>
+        <div class="content">
+            <h3>24/7 support</h3>
+            <p>call us anytime</p>
+        </div>   
+    </div>
+</section>
+<!-- icons section ends -->
+
+<!-- featured section starts -->
+<section class="featured" id="featured">
+    <h1 class="heading"><span>New Arrivals</span></h1>
+    <div class="swiper featured-slider">
+        <div class="swiper-wrapper">
+            {% for book in books %}
+            <div class="swiper-slide box">
+                <div class="icons">
+                    <a href="{% if request.user.is_authenticated %} {% url 'book_detail' book.id %} {% else %} {% url 'login' %} {% endif %}" class="fas fa-search"></a>
+                    <a href="{% if request.user.is_authenticated %} {% url 'add_to_wishlist' book.id %} {% else %} {% url 'login' %} {% endif %}" class="fas fa-heart"></a>
+                    <a href="{% if request.user.is_authenticated %} {% url 'book_detail' book.id %} {% else %} {% url 'login' %} {% endif %}" class="fas fa-eye"></a>
+                </div>
+                <div class="image">
+                    <img src="{{ book.img.url }}" alt="{{ book.title }}">
+                </div>
+                <div class="content">
+                    <h3>{{ book.title }}</h3>
+                    <p>Price: <span class="original-price">₹{{ book.pr }}</span></p>
+                    <p>Discounted Price: <span class="discounted-price">₹{{ book.discounted_price }}</span></p><br>
+                    <form action="{% if request.user.is_authenticated %} {% url 'addtocart' %} {% else %} {% url 'login' %} {% endif %}" method="GET" class="d-inline">
+                        <input type="hidden" name="prod_id" value="{{ book.id }}"/>
+                        <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+ <!-- featured section ends -->
+ {% block main-content %} {% endblock main-content %}
+
+<!-- Footer -->
+<footer class="pt-5 pb-4" style="background: linear-gradient(135deg, #a6bfc2, #fffde7); color: #555;">
+    <div class="container text-center text-md-left">
+        <div class="row text-center text-md-left">
+
+            <!-- Company Info -->
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">BookVoyage</h5>
+                <p>Discover the best selection of books online. We offer a wide variety of books to cater to every reader's taste. Happy reading!</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">Quick Links</h5>
+                <p>
+                    <a href="/" class="text-dark" style="text-decoration: none;">Home</a>
+                </p>
+                <p>
+                    <a href="{% if request.user.is_authenticated %} {% url 'all_books' %} {% else %} {% url 'login' %} {% endif %}" class="text-dark" style="text-decoration: none;">Shop</a>
+                </p>
+                <p>
+                    <a href="{% if request.user.is_authenticated %} {% url 'about_us' %} {% else %} {% url 'login' %} {% endif %}" class="text-dark" style="text-decoration: none;">About Us</a>
+                </p>
+                <p>
+                    <a href="{% if request.user.is_authenticated %} {% url 'contact_us' %} {% else %} {% url 'login' %} {% endif %}" class="text-dark" style="text-decoration: none;">Contact Us</a>
+                </p>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">Contact</h5>
+                <p>
+                    <i class="fas fa-home mr-3"></i> 123 Book Street, City, Country
+                </p>
+                <p>
+                    <i class="fas fa-envelope mr-3"></i> info@bookvoyage.com
+                </p>
+                <p>
+                    <i class="fas fa-phone mr-3"></i> + 01 234 567 88
+                </p>
+                <p>
+                    <i class="fas fa-print mr-3"></i> + 01 234 567 89
+                </p>
+            </div>
+
+            <!-- Social Media -->
+            <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">Follow Us</h5>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Copyright -->
+        <div class="row d-flex justify-content-center mt-4">
+            <div class="col-md-8 col-lg-8 col-xl-7">
+                <p class="text-center">
+                    © 2024 BookVoyage. All Rights Reserved | Designed by Sethulakshmi Rajeev
+                </p>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+<!--footer end-->
+
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script> 
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <!-- custom js file link-->
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        // Auto close alert after 2 seconds
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

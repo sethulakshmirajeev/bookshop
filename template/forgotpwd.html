@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .form-gap { padding-top: 70px; }
+        .login-form-container { max-width: 400px; margin: 0 auto; }
+    </style>
+    
+</head>
+<body>
+  <div class="form-gap"></div>
+<div class="container">
+    <div class="login-form-container">
+        <div class="text-center">
+            <h3><i class="fas fa-lock fa-4x"></i></h3>
+            <h2 class="text-center">Forgot Password?</h2>
+            <p>You can reset your password here.</p>
+
+            {% if messages %}
+                <div class="container">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" role="alert">
+                            <strong>{% if message.tags == 'success' %}Success{% else %}Error{% endif %}</strong>
+                            <p>{{ message }}</p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form id="register-form" role="form" autocomplete="off" class="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        <input id="email" name="email" placeholder="email address" class="form-control" type="email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input name="recover-submit" class="btn btn-lg btn-success btn-block" value="Reset Password" type="submit">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

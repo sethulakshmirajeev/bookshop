@@ -1,0 +1,114 @@
+ <!-- Header Section -->
+<header class="header">
+    <div class="header-1">
+        <a href="#" class="logo"><i class="fas fa-book"></i>BookVoyage</a>
+
+        <!-- Conditional Search Form -->
+        <form action="" class="search-form">
+            <input type="search" name="srch" placeholder="Search here..." id="search-box">
+            <label for="search-box" class="fas fa-search"></label>
+        </form>
+
+        <div class="icons">
+            <!-- Search Button -->
+            <div id="search-btn" class="fas fa-search"></div>
+            
+            {% if request.user.is_authenticated %}
+            <!-- Wishlist and Cart Icons -->
+            <a href="{% url 'view_wishlist' %}" class="fas fa-heart">
+                <span class="badge rounded-pill bg-dark">
+                    {% if wishitem > 0 %}
+                        {{ wishitem }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </span>
+            </a>
+            <a href="{% url 'cart' %}" class="fas fa-shopping-cart">
+                <span class="badge rounded-pill bg-dark">
+                    {% if totalitem > 0 %} 
+                        {{ totalitem }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </span>
+            </a>
+            {% endif %}
+            
+            <!-- User Login Icon -->
+            <div id="login-btn" class="fas fa-user"></div>
+        </div>
+    </div>
+
+    
+{% if request.user.is_authenticated %}
+<div class="dropdown-user">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      {{request.user}}
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{% url 'profile' %}">profile</a></li>
+      <li><a class="dropdown-item" href="../changepwd">Change password</a></li>
+      <li><a class="dropdown-item" href="{% url 'order' %}">orders</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="../logout">logout</a></li>
+    </ul>
+</div>
+
+<!-- Login Form -->
+{% else %}
+<div class="login-form-container">
+    <div id="close-login-btn" class="fas fa-times"></div>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <h3>Login</h3>
+        <!-- Display messages if any -->
+        {% if messages %}
+            <div style="width:400px; margin-left: 40%;">
+                {% for msg in messages %}
+                    <div class="alert {% if 'success' in msg.tags %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" role="alert">
+                        <strong>{% if 'success' in msg.tags %}!!SUCCESS!!{% else %}!!ERROR!!{% endif %}</strong>
+                        <p>{{ msg }}</p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <span>Username</span>
+        <input type="text" name="un" class="box" placeholder="Enter your username">
+        <span>Password</span>
+        <input type="password" name="pa" class="box" placeholder="Enter your password">
+        <div class="checkbox">
+            <input type="checkbox" name="" id="remember-me">
+            <label for="remember-me">Remember me</label>
+        </div>
+        <input type="submit" value="Login" class="btn">
+        <p>Forget password? <a href='../forgotpwd'>Click here</a></p>
+        <p>Don't have an account? <a href="../registerr">Create one</a></p>
+    </form>
+</div>
+{% endif %}
+</div>
+
+<div class="header-2">
+    <nav class="navbar">
+        <a href="/">Home</a>
+        <div class="dropdown">
+            <a href="#" class="nav-link dropdown-toggle" id="navbarDropdownArrivals" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Arrivals
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownArrivals">
+                <a class="dropdown-item" href="{% url 'all_books' %}">All Categories</a>
+                {% for category, display in CATEGORY_CHOICES %}
+                    <a class="dropdown-item" href="{% url 'category_books' category %}">{{ display }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <a href="{% url 'about_us' %}">About Us</a>
+        <a href="{% url 'contact_us' %}">Contact</a>
+    </nav>
+</div>
+</header>
+<!-- header section ends -->

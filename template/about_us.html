@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Book Shop |</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom CSS file link -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> 
+    
+</head>
+<style>
+     body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .about-section {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        .about-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .about-section p {
+            font-size: 1.9rem;
+            text-align: justify;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        .carousel-item img {
+            width: 100%;
+            height: 500px;
+            object-fit: fill;
+        }
+    .original-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-right: 10px;
+}
+
+    .discounted-price {
+    color: #E53935;
+    font-weight: bold;
+}
+
+    
+</style>
+<body data-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">     
+    <!-- header section starts   -->
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-1">
+            <a href="#" class="logo"><i class="fas fa-book"></i>BookVoyage</a>
+    
+            <!-- Conditional Search Form -->
+            <form action="{% if request.user.is_authenticated %}  {% else %} {% url 'login' %} {% endif %}" class="search-form">
+                <input type="search" name="srch" placeholder="Search here..." id="search-box">
+                <label for="search-box" class="fas fa-search"></label>
+            </form>
+    
+            <div class="icons">
+                <!-- Search Button -->
+                <div id="search-btn" class="fas fa-search"></div>
+                
+                {% if request.user.is_authenticated %}
+                <!-- Wishlist and Cart Icons -->
+                <a href="{% url 'view_wishlist' %}" class="fas fa-heart">
+                    <span class="badge rounded-pill bg-dark">
+                        {% if wishitem > 0 %}
+                            {{ wishitem }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </span>
+                </a>
+                <a href="{% url 'cart' %}" class="fas fa-shopping-cart">
+                    <span class="badge rounded-pill bg-dark">
+                        {% if totalitem > 0 %} 
+                            {{ totalitem }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </span>
+                </a>
+                
+                {% else %}
+                <!-- User Login Icon -->
+                <div id="login-btn" class="fas fa-user"></div>
+                {% endif %}
+            </div>
+        </div>
+    
+    
+{% if request.user.is_authenticated %}
+<div class="dropdown-user">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      {{request.user}}
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{% url 'profile' %}">profile</a></li>
+      <li><a class="dropdown-item" href="../changepwd">Change password</a></li>
+      <li><a class="dropdown-item" href="{% url 'order' %}">orders</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="../logout">logout</a></li>
+    </ul>
+</div>
+
+<!-- Login Form -->
+{% else %}
+<div class="login-form-container">
+    <div id="close-login-btn" class="fas fa-times"></div>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <h3>Login</h3>
+        <!-- Display messages if any -->
+        {% if messages %}
+            <div style="width:400px; margin-left: 40%;">
+                {% for msg in messages %}
+                    <div class="alert {% if 'success' in msg.tags %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" role="alert">
+                        <strong>{% if 'success' in msg.tags %}!!SUCCESS!!{% else %}!!ERROR!!{% endif %}</strong>
+                        <p>{{ msg }}</p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <span>Username</span>
+        <input type="text" name="un" class="box" placeholder="Enter your username">
+        <span>Password</span>
+        <input type="password" name="pa" class="box" placeholder="Enter your password">
+        <div class="checkbox">
+            <input type="checkbox" name="" id="remember-me">
+            <label for="remember-me">Remember me</label>
+        </div>
+        <input type="submit" value="Login" class="btn">
+        <p>Forget password? <a href='../forgotpwd'>Click here</a></p>
+        <p>Don't have an account? <a href="../registerr">Create one</a></p>
+    </form>
+</div>
+{% endif %}
+</div>
+
+<div class="header-2">
+    <nav class="navbar">
+        <a href="/">Home</a>
+        <div class="dropdown">
+            <a href="" class="nav-link dropdown-toggle" id="navbarDropdownArrivals" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Arrivals
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownArrivals">
+                <a class="dropdown-item" href="{% url 'all_books' %}">All Categories</a>
+                {% for category, display in CATEGORY_CHOICES %}
+                    <a class="dropdown-item" href="{% url 'category_books' category %}">{{ display }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <a href="{% url 'about_us' %}">About Us</a>
+        <a href="{% url 'contact_us' %}">Contact</a>
+    </nav>
+</div>
+</header>
+<!-- header section ends -->
+
+<div id="bookCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?fit=crop&w=1200&h=500&q=80" class="d-block w-100" alt="Books Image 1">
+        </div>
+        <div class="carousel-item">
+            <img src="{% static 'images/istockphoto-3.jpg' %}" class="d-block w-100" alt="Books Image 2">
+        </div>
+        <div class="carousel-item">
+            <img src="{% static 'images/istockphoto-1.jpg' %}" class="d-block w-100" alt="Books Image 2">
+        </div>
+        <div class="carousel-item">
+            <img src="{% static 'images/istockphoto-4.jpg' %}" class="d-block w-100" alt="Books Image 2">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#bookCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#bookCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<div class="about-section">
+    <div class="container">
+        <h1>About Us</h1>
+        <p>Welcome to BookVoyage, your number one source for all things books. We're dedicated to giving you the very best of books, with a focus on quality, variety, and customer service.</p>
+        <p>Founded in 2024, BookVoyage has come a long way from its beginnings. When we first started out, our passion for books drove us to start our own business, so that BookVoyage can offer you the best selection of books online. We now serve customers all over the country and are thrilled that we're able to turn our passion into our website.</p>
+        <p>We hope you enjoy our products as much as we enjoy offering them to you. If you have any questions or comments, please don't hesitate to contact us.</p>
+        <p>Sincerely,</p>
+        <p>The BookVoyage Team</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="pt-5 pb-4" style="background: linear-gradient(135deg, #a6bfc2, #fffde7); color: #555;">
+    <div class="container text-center text-md-left">
+        <div class="row text-center text-md-left">
+
+            <!-- Company Info -->
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">BookVoyage</h5>
+                <p>Discover the best selection of books online. We offer a wide variety of books to cater to every reader's taste. Happy reading!</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">Quick Links</h5>
+                <p>
+                    <a href="/" class="text-dark" style="text-decoration: none;">Home</a>
+                </p>
+                <p>
+                    <a href="{% if request.user.is_authenticated %} {% url 'all_books' %} {% else %} {% url 'login' %} {% endif %}" class="text-dark" style="text-decoration: none;">Shop</a>
+                </p>
+                <p>
+                    <a href="{% if request.user.is_authenticated %} {% url 'about_us' %} {% else %} {% url 'login' %} {% endif %}" class="text-dark" style="text-decoration: none;">About Us</a>
+                </p>
+                <p>
+                    <a href="{% if request.user.is_authenticated %} {% url 'contact_us' %} {% else %} {% url 'login' %} {% endif %}" class="text-dark" style="text-decoration: none;">Contact Us</a>
+                </p>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">Contact</h5>
+                <p>
+                    <i class="fas fa-home mr-3"></i> 123 Book Street, City, Country
+                </p>
+                <p>
+                    <i class="fas fa-envelope mr-3"></i> info@bookvoyage.com
+                </p>
+                <p>
+                    <i class="fas fa-phone mr-3"></i> + 01 234 567 88
+                </p>
+                <p>
+                    <i class="fas fa-print mr-3"></i> + 01 234 567 89
+                </p>
+            </div>
+
+            <!-- Social Media -->
+            <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mt-3">
+                <h5 class="text-uppercase mb-4 font-weight-bold">Follow Us</h5>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="me-4" style="color: #555;">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Copyright -->
+        <div class="row d-flex justify-content-center mt-4">
+            <div class="col-md-8 col-lg-8 col-xl-7">
+                <p class="text-center">
+                    © 2024 BookVoyage. All Rights Reserved | Designed by Sethulakshmi Rajeev
+                </p>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+<!--footer end-->
+
+<!-- custom js file link-->
+<script src="{% static 'js/script.js' %}"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+/* General DataTables styling - remains default */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    font-size: 1rem; /* Adjust font size for pagination buttons */
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    font-size: 1rem; /* Adjust font size for input elements */
+}
+
+/* Navbar specific styling for orders page */
+.admin-orders-page .header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: var(--white); /* Use your preferred color */
+    box-shadow: var(--box-shadow); /* Use your preferred box shadow */
+}
+
+/* Button styling specific to orders page */
+.admin-orders-page .btn-primary {
+    background-color: var(--purple); /* Replace with your desired color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.admin-orders-page .btn-danger {
+    background-color: var(--red); /* Replace with your desired color */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+/* Default table styling */
+.admin-orders-page .table {
+    margin-top: 20px;
+}
